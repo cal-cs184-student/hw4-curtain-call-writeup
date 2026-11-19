@@ -169,10 +169,51 @@
 			<figcaption>pinned4.json with a density of 2000 g/cm<sup>2</sup> and \( k_s \) = 500 N/m.</figcaption>
 		</figure>
 
-
-		<h2>Part 3: Handling collisions with other objects</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
+		<h2>Part 3: Handling Collisions with Other Objects</h2>
+		<p>
+			I implemented collision handling for spheres and planes according to the suggestions in the spec. For spheres, if the point mass's 
+			distance from the sphere's origin was less than or equal to the sphere's radius, I computed the tangent point where the point mass 
+			should intersect the surface, then calculated the correction vector that reaches this tangent point from the sphere's last position,
+			and finally set the point mass's current position to be its previous position adjusted by this correction vector and a friction factor.
+			I followed a similar process for determining plane intersections, first identifying if the point mass's position crossed over to the
+			other side of the plane; if so, I calculated the tangent point, then the correction vector to reach a point slightly offset from the 
+			tangent point, and finally set the point mass's current position to be its previous one adjusted by the correction vector and friction
+			factor. Lastly, I updated the simulate function call to iterate through all point masses and check if any of them collided with any of the 
+			collision objects present in the scene. 
+		</p>
+		<p>
+			Below are screenshots of scene/sphere.json at its final resting position with different values of \( k_s \). As mentioned before, lower 
+			values for \( k_s \) result in a drapier, saggier cloth, and the edges of the cloth extend further down from the sphere than they do 
+			in the simulation with the default \( k_s \) = 5000 N/m. Higher values of \( k_s \) result in stronger springs that don't deform as much,
+			so the corresponding simulation's cloth looks much stiffer and doesn't drape down around the sphere as far. 
+		</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="assets/p3_ks500.png" width="350px"/>
+				  <figcaption>sphere.json with \(k_s\) = 500 N/m.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="assets/p3_ks5000.png" width="350px"/>
+				  <figcaption>sphere.json with \(k_s\) = 5000 N/m (default).</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="assets/p3_ks50000.png" width="350px"/>
+				  <figcaption>sphere.json with \(k_s\) = 50000 N/m.</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+		<br>
+		<p>
+			Finally, here is a screenshot of the cloth in plane.json lying at rest on the plane.
+		</p>
+		<figure>
+			<img src="assets/p3_plane.png" alt="pinned4.json, density = 2000, k = 500." style="width:90%"/>
+			<figcaption>plane.json at the final resting position.</figcaption>
+		</figure>
+	
 		<h2>Part 4: Handling self-collisions</h2>
 		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
