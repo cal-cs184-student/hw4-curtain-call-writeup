@@ -36,7 +36,7 @@
 
 		<br>
 
-		Link to webpage: (TODO) <a href="https://cs184.eecs.berkeley.edu/fa26">cs184.eecs.berkeley.edu/fa26</a>
+		Link to webpage: <a href="https://cal-cs184-student.github.io/hw4-curtain-call-writeup/">https://cal-cs184-student.github.io/hw4-curtain-call-writeup/</a>
 
 		<br>
 
@@ -71,10 +71,104 @@
 			<figcaption>pinned2.json with all constraints.</figcaption>
 		</figure>
 
-		
+		<h2>Part 2: Simulation via Numerical Integration</h2>
+		<p>
+			I enabled simulation of the cloth movement by implementing forces acting on the grid of point masses and springs. This is a three-step 
+			process: first, I calculated the total force acting on each point mass, which includes both external acceleration (such as gravity) and spring
+			correction forces, which act in opposite directions on both of a spring's attached masses. I then calculated each point mass's new position for each timestep 
+			via Verlet integration, using the formula \( x_{t+dt} = x_t + (1 - d) * (x_t - x_{t-dt}) + a_t * dt^2 \), where \( x_t \) is the mass's
+			current position, \( x_{t-dt} \) is its old position, \( a_t \) is the current total acceleration on the mass from all incident forces, 
+			and d is a damping term to account for energy loss due to friction or heat loss. Finally, I constrained the movement of the point masses 
+			to ensure that their connecting springs weren't overly deformed, correcting the point masses' positions if they were unpinned and exceeded the threshold 
+			distance from each other.
+		</p>
+		<p>
+			Below are screenshots of scene/pinned2.json with differing values of \( k_s \), the spring constant. At high \( k_s \), the springs connecting
+			each point mass are much more rigid, which results in the cloth appearing less flexible compared to the default value of \( k_s \) = 5000 N/m
+			and not sagging as much. At low \( k_s \), the springs are much looser, which allows the cloth to deform and sag much more in the final resting
+			position by comparison. 
+		</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="assets/p2_ks500.png" width="350px"/>
+				  <figcaption>pinned2.json at \( k_s \) = 500 N/m.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="assets/p2_ks5000.png" width="350px"/>
+				  <figcaption>pinned2.json at \( k_s \) = 5000 N/m (default).</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="assets/p2_ks25000.png" width="350px"/>
+				  <figcaption>pinned2.json at \( k_s \) = 25000 N/m.</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+		<br>
+		<p>
+			Here are screenshots of pinned2.json with different density values. Increasing the density of the cloth increases its mass, and therefore the 
+			amount of force acting on each point mass. Consequently, the higher-density cloth appears heavier, with the wrinkles being smaller and 
+			sinking deeper. By contrast, the lower-density cloth doesn't wrinkle or sag nearly as much, which makes sense because it has much less 
+			force acting on each individual point mass. 
+		</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="assets/p2_density1.png" width="350px"/>
+				  <figcaption>pinned2.json with a density of 1 g/cm<sup>2</sup>.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="assets/p2_density15.png" width="350px"/>
+				  <figcaption>pinned2.json with a density of 15 g/cm<sup>2</sup> (default).</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="assets/p2_density2000.png" width="350px"/>
+				  <figcaption>pinned2.json with a density of 2000 g/cm<sup>2</sup>.</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+		<br>
+		<p>
+			The following are screenshots of pinned2.json with different values for the damping constant d. Since damping effectively refers to 
+			how much energy is lost during the simulation, high values of d mean that the velocity of the masses is diminished, and therefore the 
+			cloth takes longer to get to its final position, falling quite slowly the whole time. With very low damping values, however, the 
+			cloth loses less energy to the environment and continues moving past the vertical rest position; at d = 0, the simulation is in near-perpetual 
+			and chaotic motion. This was harder to capture because it's related to the simulation runtime, but the screenshots below are of the simulation
+			at approximately 1 second in, for different values of d. 
+		</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="assets/p2_d0.png" width="350px"/>
+				  <figcaption>pinned2.json at d = 0%. Has already oscillated past the usual vertical resting position once.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="assets/p2_d20.png" width="350px"/>
+				  <figcaption>pinned2.json at d = 20% (default). Has reached the usual vertical resting position.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="assets/p2_d80.png" width="350px"/>
+				  <figcaption>pinned2.json at d = 80%. Has yet to reach the usual vertical resting position.</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+		<br>
+		<p>
+			Finally, here's a screenshot of pinned4.json in its final resting state, with non-default values for density and \( k_s \). This is a 
+			heavy cloth modeled with loose springs, so it sags very low, enough that some parts of the cloth sink lower than the main "suspension lines"
+			which are formed by the pinned corners of the cloth. 
+		</p>
+		<figure>
+			<img src="assets/p2_pinned4.png" alt="pinned4.json, density = 2000, k = 500." style="width:90%"/>
+			<figcaption>pinned4.json with a density of 2000 g/cm<sup>2</sup> and \( k_s \) = 500 N/m.</figcaption>
+		</figure>
 
-		<h2>Part 2: Simulation via numerical integration</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
 		<h2>Part 3: Handling collisions with other objects</h2>
 		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
@@ -85,23 +179,5 @@
 		<h2>Part 5: Shaders</h2>
 		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-		<div style="display: flex; flex-direction: column; align-items: center;">
-			<table style="width: 100%; text-align: center; border-collapse: collapse;">
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="assets/clothsim.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="assets/clothsim.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="assets/clothsim.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-			  </tr>
-			</table>
-		</div>
 	</body>
 </html>
