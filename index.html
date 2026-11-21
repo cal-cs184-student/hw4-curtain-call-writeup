@@ -52,7 +52,14 @@
 		-->
 
 		<h2>Overview</h2>
-		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
+		<p>
+			In this homework, I implemented real-time simulation of a cloth responding to its environment. I began by creating a grid of masses and springs to represent 
+			the cloth itself, then modeled how it responds to various accelerations, such as gravity and different properties of the cloth like rigidness 
+			and density. I then implemented detection of collisions between the cloth and other objects, as well as collisions with the 
+			cloth itself to simulate more realistic real-world movement. Finally, I implemented shaders to display how the cloth in motion looks 
+			under various conditions; these shaders include diffuse reflection, Blinn-Phong shading, texture mapping, bump and displacement mapping 
+			for improved texture appearances, and mirror reflections. 
+		</p>
 
 		<h2>Part 1: Masses and Springs</h2>
 		<p>
@@ -89,8 +96,8 @@
 		</p>
 		<p>
 			Below are screenshots of scene/pinned2.json with differing values of \( k_s \), the spring constant. At high \( k_s \), the springs connecting
-			each point mass are much more rigid, which results in the cloth appearing less flexible compared to the default value of \( k_s \) = 5000 N/m
-			and not sagging as much. At low \( k_s \), the springs are much looser, which allows the cloth to deform and sag much more in the final resting
+			each point mass are much more rigid, which results in the cloth appearing more taut and not sagging as much, compared to the cloth with 
+			the default value of \( k_s \) = 5000 N/m. At low \( k_s \), the springs are much looser, which allows the cloth to deform and sag much more in the final resting
 			position by comparison. 
 		</p>
 		<div style="display: flex; flex-direction: column; align-items: center;">
@@ -105,8 +112,8 @@
 				  <figcaption>pinned2.json at \( k_s \) = 5000 N/m (default).</figcaption>
 				</td>
 				<td style="text-align: center;">
-				  <img src="assets/p2_ks25000.png" width="350px"/>
-				  <figcaption>pinned2.json at \( k_s \) = 25000 N/m.</figcaption>
+				  <img src="assets/p2_ks50000.png" width="350px"/>
+				  <figcaption>pinned2.json at \( k_s \) = 50000 N/m.</figcaption>
 				</td>
 			  </tr>
 			</table>
@@ -152,11 +159,11 @@
 				</td>
 				<td style="text-align: center;">
 				  <img src="assets/p2_d20.png" width="350px"/>
-				  <figcaption>pinned2.json at d = 20% (default). Has reached the usual vertical resting position.</figcaption>
+				  <figcaption>pinned2.json at d = 0.20% (default). Has reached the usual vertical resting position.</figcaption>
 				</td>
 				<td style="text-align: center;">
 				  <img src="assets/p2_d80.png" width="350px"/>
-				  <figcaption>pinned2.json at d = 80%. Has yet to reach the usual vertical resting position.</figcaption>
+				  <figcaption>pinned2.json at d = 0.80%. Has yet to reach the usual vertical resting position.</figcaption>
 				</td>
 			  </tr>
 			</table>
