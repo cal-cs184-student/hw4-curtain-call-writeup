@@ -228,7 +228,89 @@
 			simulation_steps, and updated the point mass's position. Finally, in the simulate function I iterated over all point masses and called 
 			self_collide on each to account for the cloth's self-collision overall. 
 		</p>
-		
+		<p>
+			The screenshots below show the cloth in selfCollision.json at various stages as it falls.
+		</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="assets/p4_normal1.png" width="350px"/>
+				  <figcaption>Early self-collisions as the cloth first begins to fall.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="assets/p4_normal2.png" width="350px"/>
+				  <figcaption>Many folds in the cloth as it fully self-collides.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="assets/p4_normal3.png" width="350px"/>
+				  <figcaption>The cloth in a more rested state, folded over itself.</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+		<p>
+			Below is a comparison of the cloth's self-collision behavior for different density values. At high density, the cloth has more 
+			mass and therefore more weight, so when it initially starts falling, there are many wrinkles and ripples in the surface. At a resting 
+			position, this heavy cloth also remains much more folded over itself. By contrast, a very low-density cloth has fewer and larger folds 
+			as it starts falling, and in the resting position the cloth's weight isn't enough to keep some folds in place, so it slowly unrolled 
+			as I took the screenshot. 
+		</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="assets/p4_density2000_1.png" width="350px"/>
+				  <figcaption>Density = 2000 g/cm<sup>2</sup>, beginning to fold.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="assets/p4_density2000_2.png" width="350px"/>
+				  <figcaption>Density = 2000 g/cm<sup>2</sup> at "rest."</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="assets/p4_density1_1.png" width="350px"/>
+				  <figcaption>Density = 1 g/cm<sup>2</sup>, beginning to fold.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="assets/p4_density1_2.png" width="350px"/>
+				  <figcaption>Density 1 = g/cm<sup>2</sup> at "rest."</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+		<p>
+			Finally, here is a comparison of the cloth's self-collision behavior for varying values of the spring constant \( k_s \). 
+			At a high \( k_s \), the cloth is very rigid due to the high stiffness of the springs, so it behaves much like the low-density 
+			cloth and doesn't fold over itself as much. With a low spring constant, the cloth is much more flexible and behaves like the 
+			high-density cloth, with plenty of folds and wrinkles and a much more crumpled resting position.
+		</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="assets/p4_k50000_1.png" width="350px"/>
+				  <figcaption>\( k_s \) = 50000 N/m, beginning to fold.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="assets/p4_k50000_2.png" width="350px"/>
+				  <figcaption>\( k_s \) = 50000 N/m at "rest."</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="assets/p4_k500_1.png" width="350px"/>
+				  <figcaption>\( k_s \) = 500 N/m, beginning to fold.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="assets/p4_k500_2.png" width="350px"/>
+				  <figcaption>\( k_s \) = 500 N/m at "rest."</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+	
 		<h2>Part 5: Shaders</h2>
 		<h3>Shader Programs</h3>
 		<p>
