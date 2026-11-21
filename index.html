@@ -26,6 +26,11 @@
 
 			figcaption {
 				font-size: 14px;
+				margin-bottom: 10px;
+			}
+
+			tr {
+				margin-bottom: 10px;
 			}
 		</style>
 	</head>
@@ -106,7 +111,6 @@
 			  </tr>
 			</table>
 		</div>
-		<br>
 		<p>
 			Here are screenshots of pinned2.json with different density values. Increasing the density of the cloth increases its mass, and therefore the 
 			amount of force acting on each point mass. Consequently, the higher-density cloth appears heavier, with the wrinkles being smaller and 
@@ -131,7 +135,6 @@
 			  </tr>
 			</table>
 		</div>
-		<br>
 		<p>
 			The following are screenshots of pinned2.json with different values for the damping constant d. Since damping effectively refers to 
 			how much energy is lost during the simulation, high values of d mean that the velocity of the masses is diminished, and therefore the 
@@ -158,7 +161,6 @@
 			  </tr>
 			</table>
 		</div>
-		<br>
 		<p>
 			Finally, here's a screenshot of pinned4.json in its final resting state, with non-default values for density and \( k_s \). This is a 
 			heavy cloth modeled with loose springs, so it sags very low, enough that some parts of the cloth sink lower than the main "suspension lines"
@@ -205,7 +207,6 @@
 			  </tr>
 			</table>
 		</div>
-		<br>
 		<p>
 			Finally, here is a screenshot of the cloth in plane.json lying at rest on the plane.
 		</p>
@@ -214,11 +215,163 @@
 			<figcaption>plane.json at the final resting position.</figcaption>
 		</figure>
 	
-		<h2>Part 4: Handling self-collisions</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
+		<h2>Part 4: Handling Self-Collisions</h2>
+		<p>
+			To implement the cloth folding on itself correctly rather than clipping through, I again followed the suggestions outlined in the spec.
+			First, I completed the hash function that maps a given point mass's position in 3D to a single float value that represents the specific 
+			box volume that it's contained in; I first calculated the corresponding box volume's values for w, h, and t as suggested in the spec, then
+			created a unique hash value through a combination of exponents. I then populated the map structure so that all point masses in the same 
+			box volume are contained in a vector and have the same key, which is their hash value. In self_collide, I used the map to find all other 
+			point masses that would potentially collide with a given point mass: if the distance between the given point mass and a candidate is less than
+			\( 2 * thickness \), I calculated the correction vector to apply to the given point mass to bring it to a distance of \( 2 * thickness \)
+			from the candidate mass. After checking all candidates, I then averaged the correction vector by the number of candidates, scaled it by
+			simulation_steps, and updated the point mass's position. Finally, in the simulate function I iterated over all point masses and called 
+			self_collide on each to account for the cloth's self-collision overall. 
+		</p>
+		
 		<h2>Part 5: Shaders</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
+		<h3>Shader Programs</h3>
+		<p>
+			Shader programs are isolated programs which run in parallel on a graphics processor and execute a part of the graphics pipeline. 
+			Vertex shaders apply transformations to vertices and modify geometric properties such as the vertex normal or position, while fragment shaders process 
+			fragments that are created after rasterization and compute their colors based on their geometric properties. Consequently, vertex shaders 
+			appear before fragment shaders in the graphics pipeline to operate on vertex data, with fragment shaders directly taking the output of vertex 
+			shaders as input. Compiling and linking a vertex shader and a fragment shader produces a shader program; this allows us to create more sophisticated lighting 
+			and material effects because we can simulate raised and non-smooth surfaces, map textures to our surfaces, and give our surfaces 
+			improved reflective appearances, among other things.
+		</p>
+		<h3>Blinn-Phong Shading</h3>
+		<p>
+			The Blinn-Phong shading model combines ambient lighting, diffuse reflection, and specular highlights to create a very realistic 
+			appearance for rendered scenes, represented by the simple equation \( L_{Phong} = L_{ambient} + L_{diffuse} + L_{specular} \). Ambient
+			lighting can be thought of as a base illumination that doesn't depend on anything, not even the surface being rendered; we 
+			simply add in constant color to account for the disregarded illumination and soften the shadows which would otherwise be completely 
+			black in the scene. The formula for ambient lighing is \( L_{ambient} = k_a * I_a \), where \( k_a \) is the ambient coefficient and 
+			\( I_a \) is the ambient color. In diffuse reflection, light scatters uniformly off of the surface in all directions, producing a 
+			surface color that is the same in all viewing directions. Diffuse light is given by \( L_{diffuse} = k_d * \frac{I}{r^2} * max(0, n \cdot l) \)
+			where \( k_d \) is the diffuse coefficient, \( I \) is the light intensity, r is the distance between the surface point and the light source, 
+			n is the surface normal, and l is the direction vector from the surface point to the light. The final piece of this equation is specular 
+			highlights, in which light intensity depends on the view direction and creates more of a glossy, shiny appearance. The equation for 
+			specular lighting is \( L_{specular} = k_s * \frac{I}{r^2} * max(0, n \cdot h)^p \), where \( k_s \) is the specular coefficient, 
+			h is the vector halfway between the view direction vector and the light direction vector, and p is an "anti-roughness" term that produces 
+			a much narrower reflection lobe at high values. 
+		</p>
+		<p>
+			Below are screenshots of sphere.json with various components of the Blinn-Phong shader model active. 
+		</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="assets/p5_phong_ambient.png" width="350px"/>
+				  <figcaption>Ambient lighting only.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="assets/p5_phong_diffuse.png" width="350px"/>
+				  <figcaption>Diffuse reflection only.</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="assets/p5_phong_specular.png" width="350px"/>
+				  <figcaption>Specular highlights only.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="assets/p5_phong.png" width="350px"/>
+				  <figcaption>The full Blinn-Phong shading model.</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+		<h3>Texture Mapping</h3>
+		<p>
+			Here's a screenshot of sphere.json, but mapped to a custom texture (a screenshot from Mirror's Edge!). I simply replaced texture_1.png
+			with this image in the textures folder. 
+		</p>
+		<figure>
+			<img src="assets/p5_flight_texture.png" alt="sphere.json mapped to a custom texture." style="width:80%"/>
+			<figcaption>sphere.json rendered with a custom texture.</figcaption>
+		</figure>
+		<h3>Bump Mapping and Displacement Mapping</h3>
+		<p>
+			Below are screenshots of sphere.json with bump and displacement mapping, using texture_4.png.
+		</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="assets/p5_bump_normal.png" width="350px"/>
+				  <figcaption>Bump mapping.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="assets/p5_displacement_normal.png" width="350px"/>
+				  <figcaption>Displacement mapping.</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+		<p>
+			Bump mapping creates a mere illusion of raised edges and parts of a surface by modifying the surface's normal vectors and referencing a 
+			height map for the texture, whereas displacement mapping modifies both the surface normals and the actual vertices of the surface 
+			to reflect the height map. Consequently, bump mapping produces a nicely textured appearance despite the surfaces of the scene remaining 
+			smooth, and displacement mapping creates a noticeable change in the geometry of the scene shapes. In the screenshot with displacement mapping,
+			the cloth now has a wave-like ripple and the sphere has consistent divots all over its surface; this makes the texture seem much more ingrained into 
+			the scene compared to the rendering with bump mapping. 
+		</p>
+		<p>
+			The screenshots below display bump mapping and displacement mapping on the same scene and texture, but with different resolutions to
+			compare the shaders on different coarseness levels. 
+		</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="assets/p5_bump_lowres.png" width="350px"/>
+				  <figcaption>Bump mapping with low resolution (16x16).</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="assets/p5_bump_highres.png" width="350px"/>
+				  <figcaption>Bump mapping with high resolution (128x128).</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="assets/p5_displacement_lowres.png" width="350px"/>
+				  <figcaption>Displacement mapping with low resolution.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="assets/p5_displacement_highres.png" width="350px"/>
+				  <figcaption>Displacement mapping with high resolution.</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+		<p>
+			Though the results look very similar between the different resolutions, the coarser low-resolution spheres appear to have somewhat 
+			flatter reflections, with the specular highlights being not quite as bright. This is more visible for displacement mapping, 
+			where the higher-resolution sphere has deeper divots and a less flat-looking highlight. 
+		</p>
+		<h3>Environment-Mapped Reflections</h3>
+		<p>
+			Finally, the screenshots below show different scenes with the mirror shader active, where the environment that's being reflected 
+			is a bridge over a river. 
+		</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="assets/p5_mirror_p2.png" width="350px"/>
+				  <figcaption>pinned2.json with the mirror shader.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="assets/p5_mirror_sphere.png" width="350px"/>
+				  <figcaption>sphere.json with the mirror shader.</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
 	</body>
+	<p style="font-size: 12px"><strong>Acknowledgement of AI Use:</strong> Despite setting up this homework the same way I did for previous 
+		homeworks, I did encounter some major compiling errors and had AI help me debug and build so I could actually get the simulations to 
+		run properly. Otherwise, I took a first pass at coding all sections of the homework on my own and only used AI to debug when my code produced errors. </p>
 </html>
